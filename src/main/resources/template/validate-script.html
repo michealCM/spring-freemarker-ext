@@ -1,0 +1,84 @@
+$("${formName}").validate({
+<#if fieldValidates??>
+rules: {
+<#list fieldValidates as fieldValidate>
+${fieldValidate.fieldName}: {
+<#list fieldValidate.validates as validate>
+${replace(validate.name,'{
+"byte":        "digits",
+"short":        "digits",
+"integer":    "digits",
+"long":        "digits",
+"float":        "number",
+"double":        "number",
+"equalToField":    "equalTo"
+}' )}:<#if !(validate.args)?? || ((validate.args)?size == 0)>true
+<#else>
+<#list validate.args as arg>
+<#if (validate.args?size == 1)>
+<#if validate.name != "equalToField">
+${arg["value"]}
+<#else>
+$("input[name='${arg["value"]}']")
+</#if>
+<#else>
+<#if arg_index == 0>
+[
+</#if>
+${arg["value"]}
+<#if (arg_index &lt; (validate.args?size - 1))>
+,
+</#if>
+<#if (arg_index == (validate.args?size - 1))>
+]
+</#if>
+</#if>
+</#list>
+</#if>
+<#if (validate_index &lt; (fieldValidate.validates?size - 1))>
+,
+</#if>
+</#list>
+}<#if (fieldValidate_index &lt; (fieldValidates?size - 1))>,
+</#if>
+</#list>
+
+},
+</#if>
+
+<#if fieldValidates??>
+messages: {
+<#list fieldValidates as fieldValidate>
+${fieldValidate.fieldName}: {
+<#list fieldValidate.validates as validate>
+${replace(validate.name,'{
+"byte":        "digits",
+"short":        "digits",
+"integer":    "digits",
+"long":        "digits",
+"float":        "number",
+"double":        "number",
+"equalToField":    "equalTo"
+}' )}: '${validate.errorMsg}'
+<#if (validate_index &lt; ((fieldValidate.validates)?size - 1))>
+,
+</#if>
+</#list>
+}
+<#if (fieldValidate_index &lt; (fieldValidates?size - 1))>
+,
+</#if>
+</#list>
+},
+</#if>
+validClass: "checked",
+onkeyup: false,
+focusInvalid: false,
+focusCleanup: true,
+<#if errorContainer??>
+errorLabelContainer:"${errorContainer}",
+</#if>
+success: function(label){
+label.html("&nbsp;").addClass(this.validClass);
+}
+});
